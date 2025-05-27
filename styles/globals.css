@@ -1,25 +1,125 @@
-/* styles/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* globals.css に追記（safelist用途） */
-@layer utilities {
-  .bg-white {}
-  .bg-gray-900 {}
-  .text-black {}
-  .text-white {}
-}
-
-
 html {
   transition: background 0.3s ease, color 0.3s ease;
 }
-
 body {
   @apply bg-white text-black;
 }
 
-.dark body {
+body.dark {
   @apply bg-gray-900 text-white;
+}
+
+
+/* ✅ Markdown Content Styling */
+.markdown h1 {
+  @apply text-2xl font-bold mb-3;
+}
+.markdown h2 {
+  @apply text-xl font-semibold mb-2;
+}
+.markdown p {
+  @apply leading-relaxed mb-2;
+}
+.markdown ul {
+  @apply list-disc list-inside ml-4 mb-2;
+}
+.markdown ol {
+  @apply list-decimal list-inside ml-4 mb-2;
+}
+.markdown blockquote {
+  @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic text-gray-600 dark:text-gray-300 mb-3;
+}
+.markdown table {
+  @apply border border-gray-300 dark:border-gray-700 mt-4;
+}
+.markdown th {
+  @apply border px-3 py-1 text-left;
+}
+.markdown td {
+  @apply border px-3 py-1 text-left;
+}
+.markdown code {
+  @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm;
+}
+.markdown pre {
+  @apply bg-gray-100 dark:bg-gray-800 text-sm text-left p-4 rounded overflow-x-auto my-4 leading-relaxed;
+}
+
+/* ✅ Highlight.js GitHub Theme */
+.hljs {
+  background: transparent;
+  color: #333;
+}
+.hljs-comment,
+.hljs-quote {
+  color: #998;
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #333;
+  font-weight: bold;
+}
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: #008080;
+}
+.hljs-string,
+.hljs-doctag {
+  color: #d14;
+}
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #900;
+  font-weight: bold;
+}
+.hljs-subst {
+  font-weight: normal;
+}
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #458;
+  font-weight: bold;
+}
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #000080;
+}
+.hljs-regexp,
+.hljs-link {
+  color: #009926;
+}
+.hljs-symbol,
+.hljs-bullet {
+  color: #990073;
+}
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #0086b3;
+}
+.hljs-meta {
+  color: #999;
+  font-weight: bold;
+}
+.hljs-deletion {
+  background: #fdd;
+}
+.hljs-addition {
+  background: #dfd;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: bold;
 }
