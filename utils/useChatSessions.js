@@ -1,50 +1,83 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+const STORAGE_KEY = "chat-sessions"; 
+
 export default function useChatSessions() {
-  const [sessions, setSessions] = useState([]);
-  const [currentId, setCurrentId] = useState(null);
-
-  // 初期化
-  useEffect(() => {
-    const stored = localStorage.getItem("chatSessions");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setSessions(parsed);
-      if (parsed.length > 0) setCurrentId(parsed[0].id);
+  const getInitialData = () => {
+    if (typeof window === "undefined") return { sessions: [], currentId: null };
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      const parsed = stored ? JSON.parse(stored) : [];
+      return {
+        sessions: parsed,
+        currentId: parsed.length > 0 ? parsed[0].id : null,
+      };
+    } catch (e) {
+      console.error("読み込み失敗", e);
+      return { sessions: [], currentId: null };
     }
-  }, []);
+  };
 
-  // セッションをローカルストレージに保存
+  const { sessions: initialSessions, currentId: initialId } = getInitialData();
+  const [sessions, setSessions] = useState(initialSessions);
+  const [currentId, setCurrentId] = useState(initialId);
+
   useEffect(() => {
-    localStorage.setItem("chatSessions", JSON.stringify(sessions));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
   }, [sessions]);
 
-  const createSession = () => {
-    const id = uuidv4();
-    const newSession = { id, title: "新しいチャット", pinned: false, messages: [] };
+  const createSession = useCallback(() => {
+    const newSession = {
+      id: uuidv4(),
+      title: "新しいチャット",
+      messages: [],
+      pinned: false,
+      createdAt: Date.now(), 
+    };
     setSessions((prev) => [newSession, ...prev]);
-    return id;
-  };
+    setCurrentId(newSession.id);
+    return newSession.id;
+  }, []); 
 
-  const deleteSession = (id) => {
-    setSessions((prev) => prev.filter((s) => s.id !== id));
-    if (currentId === id) setCurrentId(null);
-  };
+  const deleteSession = useCallback((idToDelete) => {
+    setSessions((prev) => {
+      const newSessions = prev.filter((s) => s.id !== idToDelete);
+      if (currentId === idToDelete) {
+        setCurrentId(newSessions.length > 0 ? newSessions[0].id : null);
+      }
+      if (newSessions.length === 0) {
+        localStorage.removeItem("chatSessions");
+      }
+      return newSessions;
+    });
+  }, [currentId]); 
 
-  const updateTitle = (id, title) => {
+  const addMessageToSession = useCallback((sessionId, message) => {
+    if (!sessionId) return;
     setSessions((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, title } : s))
-    );
-  };
-
-  const addMessageToSession = (id, message) => {
-    setSessions((prev) =>
-      prev.map((s) =>
-        s.id === id ? { ...s, messages: [...s.messages, message] } : s
+      prev.map((session) =>
+        session.id === sessionId
+        
+          ? { ...session, messages: [...(session.messages || []), message] }
+          : session
       )
     );
-  };
+  }, []);
+
+  const updateTitle = useCallback((sessionId, title) => {
+    setSessions((prev) =>
+      prev.map((session) =>
+        session.id === sessionId ? { ...session, title } : session
+      )
+    );
+  }, []);
+  
+  const togglePinned = useCallback((sessionId) => {
+    setSessions((prev) =>
+      prev.map((s) => (s.id === sessionId ? { ...s, pinned: !s.pinned } : s))
+    );
+  }, []);
 
   return {
     sessions,
@@ -54,5 +87,6 @@ export default function useChatSessions() {
     deleteSession,
     updateTitle,
     addMessageToSession,
+    togglePinned,
   };
 }

@@ -1,4 +1,3 @@
-// ✅ utils/useSpeechInput.js
 import { useState } from "react";
 
 export default function useSpeechInput() {

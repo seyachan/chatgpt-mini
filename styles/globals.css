@@ -5,6 +5,32 @@
 html {
   transition: background 0.3s ease, color 0.3s ease;
 }
+
+html {
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+html,
+body,
+#__next {
+  @apply bg-white text-black;
+}
+
+.dark html,
+.dark body,
+.dark #__next {
+  @apply bg-gray-900 text-white;
+}
+
+#__next {
+  @apply min-h-screen bg-white text-black;
+}
+
+.dark #__next {
+  @apply bg-gray-900 text-white;
+}
+
+
 body {
   @apply bg-white text-black;
 }
@@ -13,8 +39,6 @@ body.dark {
   @apply bg-gray-900 text-white;
 }
 
-
-/* ✅ Markdown Content Styling */
 .markdown h1 {
   @apply text-2xl font-bold mb-3;
 }
