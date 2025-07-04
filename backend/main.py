@@ -33,7 +33,11 @@ origins = [
     "https://chatgpt-mini-pink.vercel.app"  # <-- VercelのURLを追加
 ]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=SESSION_SECRET,
+    https_only=False # http://localhost で動作させるために、この設定のみに絞ります
+)
 
 def get_db():
     db = SessionLocal()
