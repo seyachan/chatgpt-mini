@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext(null);
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL; // <--- 修正1: 環境変数を定義
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -9,21 +10,26 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const handleMessage = (event) => {
-            if (event.origin !== 'http://localhost:8001') return;
+
+            const apiOrigin = new URL(API_BASE_URL).origin;
+            if (event.origin !== apiOrigin) return; 
+
             if (event.data && event.data.type === 'auth_success' && event.data.token) {
                 localStorage.setItem('accessToken', event.data.token);
+               
                 window.location.reload();
             }
         };
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-    }, []);
+    }, []); 
 
     useEffect(() => {
         const storedToken = localStorage.getItem('accessToken');
         if (storedToken) {
             setToken(storedToken);
-            fetch('http://localhost:8001/api/v1/users/me', {
+       
+            fetch(`${API_BASE_URL}/api/v1/users/me`, {
                 headers: { 'Authorization': `Bearer ${storedToken}` }
             })
             .then(res => res.ok ? res.json() : Promise.reject('トークンが無効です'))
@@ -37,9 +43,11 @@ export const AuthProvider = ({ children }) => {
         } else {
             setIsLoading(false);
         }
-    }, []);
+    }, []); 
 
-    const login = () => window.open('http://localhost:8001/auth/login/google', 'loginWindow', 'width=500,height=600');
+ 
+    const login = () => window.open(`${API_BASE_URL}/auth/login/google`, 'loginWindow', 'width=500,height=600');
+    
     const logout = () => {
         localStorage.removeItem('accessToken');
         setToken(null);
