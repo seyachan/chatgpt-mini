@@ -1,37 +1,23 @@
-// components/ChatWindow.jsx
-
 import MessageBubble from "@/components/MessageBubble";
+import { useRef, useEffect } from 'react';
 
-export default function ChatWindow({ messages, tempReply, tempUserMessage, isLoading, scrollRef }) {
+export default function ChatWindow({ messages, isLoading }) {
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   return (
     <div className="flex flex-col h-full space-y-4">
-      {messages.length === 0 && !isLoading && (
-        <div className="text-center text-gray-400 mt-20">
-          ここにメッセージが表示されます。
-        </div>
-      )}
-
-      {messages.map(msg => (
-        <MessageBubble key={msg.id} role={msg.role} content={msg.content} />
+      {messages.map((msg, index) => (
+        <MessageBubble key={msg.id || index} role={msg.role} content={msg.content} />
       ))}
-
-      {tempUserMessage && (
-        <MessageBubble
-          role="user"
-          content={tempUserMessage.content}
-          isTemp={true}
-        />
+      {isLoading && (
+        <MessageBubble role="assistant" content="..." isLoading={true} />
       )}
-
-      {isLoading && tempReply && (
-        <MessageBubble
-          role="assistant"
-          content={tempReply}
-          isTemp={true}
-          isLoading={true}
-        />
-      )}
-
       <div ref={scrollRef} />
     </div>
   );

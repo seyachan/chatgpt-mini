@@ -5,7 +5,6 @@ const openai = new OpenAI({
   baseURL: process.env.OPENAI_API_BASE,
 });
 
-// このAPIは、安定したNode.jsランタイムで動作させます
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
@@ -20,25 +19,22 @@ export default async function handler(req, res) {
     }
 
     const stream = await openai.chat.completions.create({
-      model: 'llama3-8b-8192', // 使用するモデル名
+      model: 'llama3-8b-8192', 
       stream: true,
       messages: messages,
     });
 
-    // ✅【修正点1】ストリーミングに適したヘッダーに変更
     res.writeHead(200, {
       'Content-Type': 'text/event-stream; charset=utf-8',
       'Connection': 'keep-alive',
       'Cache-Control': 'no-cache',
     });
 
-    // ✅【修正点2】for...await...of ループでストリームを処理
     for await (const chunk of stream) {
-      // ✅【修正点3】フロントエンドがパースできるよう、`data: ` プレフィックスとJSON形式で送信
+
       res.write(`data: ${JSON.stringify(chunk)}\n\n`);
     }
 
-    // ✅【修正点4】ストリームの終了を知らせる（フロントの実装がこれを期待しているため）
     res.write('data: [DONE]\n\n');
     res.end();
 

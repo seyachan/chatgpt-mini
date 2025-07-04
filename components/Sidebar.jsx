@@ -12,9 +12,7 @@ export default function Sidebar({
   onDelete,
   onRename,
   onTogglePin,
-  onToggleSidebar,
 }) {
-  
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredSessions = useMemo(() => {
@@ -36,18 +34,7 @@ export default function Sidebar({
 
   return (
     <div className="w-full h-full bg-[#f7f7f8] dark:bg-[#1e1e20] text-black dark:text-white flex flex-col p-2 gap-2">
-
-      <div className="flex justify-end">
-        <button
-          onClick={onToggleSidebar}
-          className="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800"
-          title="サイドバーを隠す"
-        >
-          ←
-        </button>
-      </div>
-
-      <nav className="text-xs leading-tight">
+      <nav className="text-xs leading-tight mt-8"> {/* 閉じるボタンがなくなった分、少しマージンを追加 */}
         <ul className="space-y-1">
           <li
             onClick={onNew}
@@ -56,7 +43,6 @@ export default function Sidebar({
             <MessageSquarePlus size={16} />
             <span className="text-sm">新しいチャット</span>
           </li>
-
           <li className="relative flex items-center">
             <Search
               size={16}
@@ -67,21 +53,16 @@ export default function Sidebar({
               placeholder="チャットを検索"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-100 border-gray-300 dark:border-gray-600 focus:ring-0 rounded-md pl-8 pr-3 py-2 text-sm outline-none"
+              className="w-full bg-transparent border border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0 rounded-md pl-8 pr-3 py-2 text-sm outline-none"
             />
           </li>
-
           <li className="flex items-center text-xs gap-2 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-[#2a2b32] cursor-pointer">
             <BookOpen size={16} />
             <span className="text-sm">ライブラリ</span>
           </li>
         </ul>
       </nav>
-
-      {/* 区切り線 */}
       <div className="border-b border-gray-200 dark:border-gray-700 mx-2"></div>
-
-      {/* ✅ 5. チャット履歴リストには、絞り込まれた結果を渡す */}
       <div className="flex-1 overflow-y-auto space-y-4 pt-2">
         {pinnedSessions.length > 0 && (
           <div>
