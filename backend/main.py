@@ -7,6 +7,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 import openai
 from dotenv import load_dotenv
+BACKEND_URL = os.getenv("https://chatgpt-mini-g9tk.onrender.com", "http://localhost:8001")
+FRONTEND_URL = os.getenv("https://chatgpt-mini-pink.vercel.app", "http://localhost:3002")
+
 
 # .envファイルを最初に読み込む
 load_dotenv()
@@ -24,7 +27,11 @@ SESSION_SECRET = os.getenv("SESSION_SECRET_KEY", "a_default_secret_key")
 
 app = FastAPI()
 
-origins = ["http://localhost:3000", "http://localhost:3002"]
+origins = [
+    "http://localhost:3000", 
+    "http://localhost:3002",
+    "https://chatgpt-mini-pink.vercel.app"  # <-- VercelのURLを追加
+]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET)
 

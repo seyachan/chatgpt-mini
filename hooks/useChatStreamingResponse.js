@@ -22,11 +22,6 @@ export default function useChatStreamingResponse({
       try {
         const previousMessages = currentSession?.messages || [];
 
-        // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-        //                ここが最後の修正点です
-        // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-        // handleUserMessageで追加済みのメッセージ履歴をそのまま使うようにします。
-        // ここで `text` を重複して追加するのをやめます。
         const cleanMessages = previousMessages.map(m => ({
           role: m.role,
           content: m.content,

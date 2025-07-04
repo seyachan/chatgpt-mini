@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import generateUUID from '@/utils/generateUUID';
 
 const LOCAL_STORAGE_KEY = 'anonymousChatSessions';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL; // <--- 1. この行を追加
 
 export default function useChatSessions() {
   const { token, isLoading: authIsLoading } = useAuth();
@@ -16,7 +17,8 @@ export default function useChatSessions() {
     let newSession;
     if (token) {
       try {
-        const response = await fetch('http://localhost:8001/api/v1/sessions', {
+        // <--- 2. URLを修正
+        const response = await fetch(`${API_BASE_URL}/api/v1/sessions`, {
           method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('APIセッション作成失敗');
@@ -41,7 +43,8 @@ export default function useChatSessions() {
       if (token) {
         try {
           localStorage.removeItem(LOCAL_STORAGE_KEY);
-          const response = await fetch('http://localhost:8001/api/v1/sessions', {
+          // <--- 2. URLを修正
+          const response = await fetch(`${API_BASE_URL}/api/v1/sessions`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           if (response.ok) loadedSessions = await response.json();
@@ -78,7 +81,8 @@ export default function useChatSessions() {
     let aiMessage;
     if (token) {
       try {
-        const response = await fetch(`http://localhost:8001/api/v1/sessions/${sessionId}/messages`, {
+        // <--- 2. URLを修正
+        const response = await fetch(`${API_BASE_URL}/api/v1/sessions/${sessionId}/messages`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ role: 'user', content })
@@ -92,10 +96,8 @@ export default function useChatSessions() {
       aiMessage = { id: generateUUID(), role: 'assistant', content: `「${content}」への返信です(匿名)` };
     }
     
-    // ✅ ユーザーメッセージとAIメッセージの両方を正しくUIに反映させる
     setSessions(prev => prev.map(s => {
       if (s.id === sessionId) {
-        // 一時的に追加したユーザーメッセージを、永続的なメッセージに置き換える
         const newMessages = s.messages.filter(m => m.id !== userMessage.id);
         newMessages.push(userMessage, aiMessage);
         return { ...s, messages: newMessages };
@@ -112,7 +114,8 @@ export default function useChatSessions() {
      setSessions(newSessions);
      if (token) {
        try {
-         await fetch(`http://localhost:8001/api/v1/sessions/${idToDelete}`, {
+        // <--- 2. URLを修正
+         await fetch(`${API_BASE_URL}/api/v1/sessions/${idToDelete}`, {
            method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
          });
        } catch (error) { console.error("セッション削除APIエラー:", error); }
